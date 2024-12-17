@@ -1,0 +1,374 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+tags:
+- name: Заказ
+  description: Предоставляет конечные точки для работы с заказами
+paths:
+  /orders:
+    get:
+      tags:
+      - Заказ
+      description: Позволяет найти заказ по id
+      operationId: findOrderById
+      parameters:
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "404":
+          description: Заказ с указанным id не найден
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "200":
+          description: Заказ найден успешно
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrderResponseDto"
+    post:
+      tags:
+      - Заказ
+      description: Позволяет создать заказ
+      operationId: createOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderCreateRequestDto"
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "400":
+          description: Ошибка в данных запроса
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "200":
+          description: Создание заказа произошло успешно
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrderResponseDto"
+  /orders/date_price:
+    get:
+      tags:
+      - Заказ
+      description: Позволяет найти заказы за заданную дату и больше заданной общей
+        суммы заказа.
+      operationId: findByDateAndPrice
+      parameters:
+      - name: orderFindByDateAndPrice
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/OrderFindByDateAndPriceDto"
+      responses:
+        "404":
+          description: Заказы с заданными условиями не найдены
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "400":
+          description: Ошибка в данных запроса
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "200":
+          description: Заказы найдены успешно
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderResponseDto"
+  /orders/article_date:
+    get:
+      tags:
+      - Заказ
+      description: "Позволяет получить список заказов, не содержащих заданный това\
+        р и поступивших в заданный временной период"
+      operationId: findByArticleAndDateBetween
+      parameters:
+      - name: orderFindByArticleAndDateBetweenDto
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/OrderFindByArticleAndDateBetweenDto"
+      responses:
+        "404":
+          description: Заказы с заданными условиями не найдены
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "400":
+          description: Ошибка в данных запроса
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "200":
+          description: Заказы найдены успешно
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderResponseDto"
+components:
+  schemas:
+    ErrorResponseDto:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+    OrderCreateRequestDto:
+      required:
+      - date
+      - deliveryAddress
+      - deliveryType
+      - paymentType
+      - price
+      - recipient
+      type: object
+      properties:
+        price:
+          type: number
+          description: Общая сумма заказа
+          example: 100.0
+        date:
+          type: string
+          description: Дата заказа
+          format: date
+          example: 2024-12-12
+        recipient:
+          type: string
+          description: Получатель
+          example: Иванов И.И.
+        deliveryAddress:
+          type: string
+          description: Адрес доставки
+          example: "Москва, Мансуровский переулок, 9"
+        paymentType:
+          type: string
+          description: Тип оплаты
+          example: Наличные
+          enum:
+          - CARD
+          - CASH
+        deliveryType:
+          type: string
+          description: Тип доставки
+          example: Самовывоз
+          enum:
+          - SELF_DELIVERY
+          - DOOR_DELIVERY
+        orderDetails:
+          uniqueItems: true
+          type: array
+          description: Детали заказа
+          items:
+            $ref: "#/components/schemas/OrderDetailsCreateRequestDto"
+    OrderDetailsCreateRequestDto:
+      required:
+      - article
+      - price
+      - productName
+      - quantity
+      type: object
+      properties:
+        article:
+          type: integer
+          description: Артикул товара
+          format: int64
+          example: 11111
+        productName:
+          type: string
+          description: Название товара
+          example: Ноутбук
+        quantity:
+          type: integer
+          description: Количество товара
+          format: int32
+          example: 1
+        price:
+          type: number
+          description: Стоимость товара
+          example: 50.0
+      description: Детали заказа
+    OrderDetailsResponseDto:
+      required:
+      - article
+      - orderDetailsId
+      - price
+      - productName
+      - quantity
+      type: object
+      properties:
+        orderDetailsId:
+          type: integer
+          description: Идентификатор
+          format: int64
+          example: 1
+        article:
+          type: integer
+          description: Артикул
+          format: int64
+          example: 11111
+        productName:
+          type: string
+          description: Название товара
+          example: Ноутбук
+        quantity:
+          type: integer
+          description: Количество товара
+          format: int32
+          example: 1
+        price:
+          type: number
+          description: Общая сумма заказа
+          example: 100.0
+      description: Детали заказа
+    OrderResponseDto:
+      required:
+      - date
+      - deliveryAddress
+      - deliveryType
+      - number
+      - orderId
+      - paymentType
+      - price
+      - recipient
+      type: object
+      properties:
+        orderId:
+          type: integer
+          description: Идентификатор заказа
+          format: int64
+          example: 1
+        number:
+          type: string
+          description: Номер заказа
+          example: "1111120241212"
+        price:
+          type: number
+          description: Общая сумма заказа
+          example: 100.0
+        date:
+          type: string
+          description: Дата заказа
+          format: date
+          example: 2024-12-12
+        recipient:
+          type: string
+          description: Получатель
+          example: Иванов И.И.
+        deliveryAddress:
+          type: string
+          description: Адрес доставки
+          example: "Москва, Мансуровский переулок, 9"
+        paymentType:
+          type: string
+          description: Тип оплаты
+          example: Наличные
+          enum:
+          - CARD
+          - CASH
+        deliveryType:
+          type: string
+          description: Тип доставки
+          example: Самовывоз
+          enum:
+          - SELF_DELIVERY
+          - DOOR_DELIVERY
+        orderDetails:
+          uniqueItems: true
+          type: array
+          description: Детали заказа
+          items:
+            $ref: "#/components/schemas/OrderDetailsResponseDto"
+    OrderFindByDateAndPriceDto:
+      required:
+      - minPrice
+      - orderDate
+      type: object
+      properties:
+        orderDate:
+          type: string
+          description: Дата заказа
+          format: date
+          example: 2024-12-12
+        minPrice:
+          type: number
+          description: Минимальная сумма заказа
+          example: 100.0
+    OrderFindByArticleAndDateBetweenDto:
+      required:
+      - article
+      - beginDate
+      - endDate
+      type: object
+      properties:
+        article:
+          type: integer
+          description: Артикул товара
+          format: int64
+          example: 12345
+        beginDate:
+          type: string
+          description: Дата начала периода
+          format: date
+          example: 2024-01-01
+        endDate:
+          type: string
+          description: Дата окончания периода
+          format: date
+          example: 2024-12-12

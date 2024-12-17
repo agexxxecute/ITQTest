@@ -1,0 +1,8 @@
+    spring:
+      sql:
+        init:
+          mode: always
+    order:
+      number:
+        generate:
+          url: http://localhost:8081/numbers

@@ -1,0 +1,52 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8081
+  description: Generated server url
+tags:
+- name: Генерация номера заказа
+  description: Предоставляет конечную точку для генерации номера заказа
+paths:
+  /numbers:
+    get:
+      tags:
+      - Генерация номера заказа
+      description: Позволяет сгенерировать номер заказа
+      operationId: generateNumber
+      responses:
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "507":
+          description: Достигнуто ограничение количества номеров за день
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "200":
+          description: Создание заказа произошло успешно
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GeneratedNumberDto"
+components:
+  schemas:
+    ErrorResponseDto:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+    GeneratedNumberDto:
+      required:
+      - generatedNumber
+      type: object
+      properties:
+        generatedNumber:
+          type: string
+          description: Сгенерированный номер заказа
+          example: "1111120241212"

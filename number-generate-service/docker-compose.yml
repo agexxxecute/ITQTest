@@ -1,0 +1,23 @@
+version: '5.0'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: number-generate-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://number-generate-db:27017/number-generate
+    restart: always
+  mongodb:
+    image: mongo:latest
+    container_name: number-generate-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+volumes:
+  mongodb_data:

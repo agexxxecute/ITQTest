@@ -1,0 +1,4 @@
+order:
+  number:
+    generate:
+      url: http://localhost:8081/numbers

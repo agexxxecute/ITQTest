@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/order-service
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+
+order:
+  number:
+    generate:
+      url: http://number-generate-service:8081/numbers
+logging:
+  level:
+    sql: debug
+    root: info

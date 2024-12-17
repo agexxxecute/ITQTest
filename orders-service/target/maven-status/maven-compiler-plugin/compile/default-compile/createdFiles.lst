@@ -1,0 +1,7 @@
+com\itqtest\ordersservice\entity\OrderDetails.class
+com\itqtest\ordersservice\entity\enums\PaymentType.class
+com\itqtest\ordersservice\OrdersServiceApplication.class
+com\itqtest\ordersservice\entity\enums\DeliveryType.class
+com\itqtest\ordersservice\repository\OrderRepository.class
+com\itqtest\ordersservice\entity\Order.class
+com\itqtest\ordersservice\service\impl\OrderServiceImpl.class
